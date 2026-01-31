@@ -1,0 +1,84 @@
+# ============================================
+# Hercules RO Private Server
+# Docker Compose for Dokploy
+# ============================================
+
+services:
+  # MariaDB Database
+  db:
+    image: mariadb:10.11
+    container_name: ro-database
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpass}
+      MYSQL_DATABASE: ${DB_NAME:-hercules}
+      MYSQL_USER: ${DB_USER:-ragnarok}
+      MYSQL_PASSWORD: ${DB_PASS:-ragnarok}
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./docker/init-db:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: [ "CMD", "healthcheck.sh", "--connect", "--innodb_initialized" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ro-network
+
+  # Hercules Emulator
+  emulator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ro-emulator
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_USER: ${DB_USER:-ragnarok}
+      DB_PASS: ${DB_PASS:-ragnarok}
+      DB_NAME: ${DB_NAME:-hercules}
+      SERVER_NAME: ${SERVER_NAME:-MyROServer}
+      WISP_NAME: ${WISP_NAME:-Server}
+      PUBLIC_IP: ${PUBLIC_IP:-127.0.0.1}
+    ports:
+      - "6900:6900" # Login Server
+      - "6121:6121" # Char Server
+      - "5121:5121" # Map Server
+    volumes:
+      - emulator_logs:/hercules/log
+      - emulator_save:/hercules/save
+    networks:
+      - ro-network
+
+  # phpMyAdmin (Optional - for database management)
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: ro-phpmyadmin
+    restart: unless-stopped
+    depends_on:
+      - db
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_USER: ${DB_USER:-ragnarok}
+      PMA_PASSWORD: ${DB_PASS:-ragnarok}
+    ports:
+      - "8080:80"
+    networks:
+      - ro-network
+
+volumes:
+  db_data:
+    driver: local
+  emulator_logs:
+    driver: local
+  emulator_save:
+    driver: local
+
+networks:
+  ro-network:
+    driver: bridge
