@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     g++ \
     zlib1g-dev \
-    libmysqlclient-dev \
+    libmariadb-dev \
     libpcre3-dev \
     libssl-dev \
     ca-certificates \
