@@ -14,6 +14,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     g++ \
     zlib1g-dev \
     libmariadb-dev \
+    libmariadb-dev-compat \
+    pkg-config \
     libpcre3-dev \
     libssl-dev \
     ca-certificates \
