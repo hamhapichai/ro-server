@@ -28,7 +28,7 @@ ARG HERCULES_BRANCH=stable
 RUN git clone --depth 1 --branch ${HERCULES_BRANCH} https://github.com/HerculesWS/Hercules.git .
 
 # Configure for pre-renewal mode
-RUN ./configure --enable-prere=yes --enable-packetver=20190605
+RUN ./configure --enable-prere=yes --enable-packetver=20180418
 
 # Build
 RUN make clean && make sql -j$(nproc)
