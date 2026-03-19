@@ -25,6 +25,23 @@ services:
     networks:
       - ro-network
 
+  # phpMyAdmin
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: ro-phpmyadmin
+    restart: unless-stopped
+    depends_on:
+      - db
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_USER: ${DB_USER:-ragnarok}
+      PMA_PASSWORD: ${DB_PASS:-ragnarok}
+    ports:
+      - "8181:80"
+    networks:
+      - ro-network
+
   # Hercules Emulator
   emulator:
     build:
@@ -54,26 +71,6 @@ services:
     networks:
       - ro-network
 
-  # phpMyAdmin (Optional - for database management)
-  phpmyadmin:
-    image: phpmyadmin:latest
-    container_name: ro-phpmyadmin
-    restart: unless-stopped
-    depends_on:
-      - db
-    environment:
-      PMA_HOST: db
-      PMA_PORT: 3306
-      PMA_USER: ${DB_USER:-ragnarok}
-      PMA_PASSWORD: ${DB_PASS:-ragnarok}
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.ro-phpmyadmin.rule=Host(`${PMA_DOMAIN:-pma.localhost}`)"
-      - "traefik.http.routers.ro-phpmyadmin.entrypoints=web"
-      - "traefik.http.services.ro-phpmyadmin.loadbalancer.server.port=80"
-    networks:
-      - ro-network
-      - dokploy-network
 
 volumes:
   db_data:
@@ -86,5 +83,3 @@ volumes:
 networks:
   ro-network:
     driver: bridge
-  dokploy-network:
-    external: true
