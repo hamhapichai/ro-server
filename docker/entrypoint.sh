@@ -98,6 +98,13 @@ login_configuration: {
 }
 EOF
 
+# Apply SQL upgrades
+echo "Applying SQL upgrades..."
+for sql_file in /hercules/sql-files/upgrades/*.sql; do
+    mysql -h "${DB_HOST}" -P "${DB_PORT}" -u "${DB_USER}" -p"${DB_PASS}" "${DB_NAME}" < "$sql_file" 2>/dev/null || true
+done
+echo "SQL upgrades done."
+
 # Set ownership
 chown -R hercules:hercules /hercules
 
