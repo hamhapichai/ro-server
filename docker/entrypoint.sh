@@ -92,6 +92,9 @@ login_configuration: {
     login: {
         login_ip: "0.0.0.0"
     }
+    account: {
+        new_account: true
+    }
 }
 EOF
 
