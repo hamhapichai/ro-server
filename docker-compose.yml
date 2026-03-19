@@ -66,10 +66,14 @@ services:
       PMA_PORT: 3306
       PMA_USER: ${DB_USER:-ragnarok}
       PMA_PASSWORD: ${DB_PASS:-ragnarok}
-    ports:
-      - "8080:80"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.ro-phpmyadmin.rule=Host(`${PMA_DOMAIN:-pma.localhost}`)"
+      - "traefik.http.routers.ro-phpmyadmin.entrypoints=web"
+      - "traefik.http.services.ro-phpmyadmin.loadbalancer.server.port=80"
     networks:
       - ro-network
+      - dokploy-network
 
 volumes:
   db_data:
@@ -82,3 +86,5 @@ volumes:
 networks:
   ro-network:
     driver: bridge
+  dokploy-network:
+    external: true
