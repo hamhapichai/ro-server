@@ -60,11 +60,11 @@ char_configuration: {
         userid: "s1"
         passwd: "p1"
         login_ip: "127.0.0.1"
+        char_ip: "${PUBLIC_IP}"
     }
     char_server: {
         server_name: "${SERVER_NAME}"
         wisp_server_name: "${WISP_NAME}"
-        char_ip: "${PUBLIC_IP}"
     }
 }
 EOF
@@ -76,8 +76,6 @@ map_configuration: {
         userid: "s1"
         passwd: "p1"
         char_ip: "127.0.0.1"
-    }
-    map_server: {
         map_ip: "${PUBLIC_IP}"
     }
 }
